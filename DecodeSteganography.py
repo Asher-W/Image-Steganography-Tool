@@ -25,22 +25,27 @@ def getMessage():
             encoded.append(newPix)
         else:
             seed = ord(savedURL[-1]) + index * 2
-            print(savedURL[-1], index, seed)
+            possibleChange = 1
             while 1:
                 newPix = [getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height)]
                 if newPix not in encoded: break
-                else: seed += newPix[0] * 2
+                if newPix[0] < width-possibleChange: newPix[0] +=possibleChange
+                if newPix[1] < height-possibleChange: newPix[1] += possibleChange
+                if newPix not in encoded: break
+                seed += newPix[0] * 2 + possibleChange * 5
+                possibleChange += 1
             encoded.append(newPix)
             savedURL = savedURL + chr((pixels[newPix[0],newPix[1]][0] - baseColor[0]) + (pixels[newPix[0],newPix[1]][1] - baseColor[1]) + 
               (pixels[newPix[0],newPix[1]][2] - baseColor[2]) + 64)
-            print("    " + savedURL, newPix)
+    print(savedURL)
 
 def stringToNum(str : str):
     total = 0
     for i in range(len(str)): total += ord(str[i][0])
     return total
 
-def getSudoRandom(seed : int, base : int, top : int):
+def getSudoRandom(seed, base, top):
+    seed, base, top = int(seed), int(base), int(top)
     seedBin = bin(seed)[2:]
     endbin = bin(top)[2:]
     extraZeros = len(seedBin) - len(endbin)
@@ -57,7 +62,6 @@ def getSudoRandom(seed : int, base : int, top : int):
         num += i ** v
     returnNum = num
     del num
-
-    return (returnNum ** 3 - base) % top
+    return min(max((returnNum ** 3 + base) ** 2 % (top - base), base), top - 1)
 
 getMessage()

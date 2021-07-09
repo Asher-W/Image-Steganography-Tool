@@ -53,10 +53,15 @@ def encode_message(fname, text, URL):
         else:
             seed = ord(URL[index - 1]) + index * 2
             if index < 10: print(URL[index - 1], index, seed)
+            possibleChange = 1
             while 1:
                 newPix = [getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height)]
                 if newPix not in encoded: break
-                else: seed += newPix[0] * 2 + 1
+                if newPix[0] < width-possibleChange: newPix[0] +=possibleChange
+                if newPix[1] < height-possibleChange: newPix[1] += possibleChange
+                if newPix not in encoded: break
+                seed += newPix[0] * 2 + possibleChange * 5
+                possibleChange += 1
             encoded.append(newPix)
             if index < 10: print("    " + URL[:index + 1], newPix)
         baseRed += data[encoded[-1][0] + (encoded[-1][1] * width)][0]
@@ -89,33 +94,6 @@ def encode_message(fname, text, URL):
         Blue = ceil(letterVal)
         pixels[point[0], point[1]] = (int(baseRed + Red), int(baseGreen + Green), int(baseBlue + Blue))
 
-    baseColor = pixels[0,0]
-    encodedLen = pixels[0,1]
-    URLLength = (abs(baseColor[0] - encodedLen[0]) + abs(baseColor[1] - encodedLen[1]) + 
-      abs(baseColor[2] - encodedLen[2]))
-    encoded = [(0,0),(0,1)]
-    savedURL = ""
-    for index in range(URLLength):
-        if not index: 
-            newPix = (getSudoRandom(stringToNum("Image.png") * width, 0, width), 
-              getSudoRandom((stringToNum("Image.png") + height/2) * height, 0, height))
-            if newPix in encoded: 
-                newPix[1] += 1
-            savedURL = savedURL + chr((pixels[newPix[0],newPix[1]][0] - baseColor[0]) + (pixels[newPix[0],newPix[1]][1] - baseColor[1]) + 
-              (pixels[newPix[0],newPix[1]][2] - baseColor[2]) + 64)
-            encoded.append(newPix)
-        else:
-            seed = ord(savedURL[-1]) + index * 2
-            print(savedURL[-1], index, seed)
-            while 1:
-                newPix = (getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height))
-                if newPix not in encoded: break
-                else: seed += newPix[0] + 2 * 2
-                print(URL[:index + 1])
-            encoded.append(newPix)
-            savedURL = savedURL + chr((pixels[newPix[0],newPix[1]][0] - baseColor[0]) + (pixels[newPix[0],newPix[1]][1] - baseColor[1]) + (pixels[newPix[0],newPix[1]][2] - baseColor[2]) + 64)
-            print("    " + savedURL, newPix)
-
     im.save(fname)
     im.close()
 
@@ -125,7 +103,6 @@ def stringToNum(str : str):
     return total
 
 def getSudoRandom(seed, base, top):
-    print("hmmm")
     seed, base, top = int(seed), int(base), int(top)
     seedBin = bin(seed)[2:]
     endbin = bin(top)[2:]
@@ -144,8 +121,7 @@ def getSudoRandom(seed, base, top):
     returnNum = num
     del num
 
-    print("hrr")
-    return min(max((returnNum ** 3 + base) % (top - base), base), top - 1)
+    return min(max((returnNum ** 3 + base) ** 2 % (top - base), base), top - 1)
 
 #create the object to hold widgets
 root = Tk()
