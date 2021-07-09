@@ -56,7 +56,7 @@ def encode_message(fname, text, URL):
             while 1:
                 newPix = [getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height)]
                 if newPix not in encoded: break
-                else: seed += newPix[0] * 2
+                else: seed += newPix[0] * 2 + 1
             encoded.append(newPix)
             if index < 10: print("    " + URL[:index + 1], newPix)
         baseRed += data[encoded[-1][0] + (encoded[-1][1] * width)][0]
@@ -111,7 +111,7 @@ def encode_message(fname, text, URL):
                 newPix = (getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height))
                 if newPix not in encoded: break
                 else: seed += newPix[0] + 2 * 2
-                print("---------------------------------------")
+                print(URL[:index + 1])
             encoded.append(newPix)
             savedURL = savedURL + chr((pixels[newPix[0],newPix[1]][0] - baseColor[0]) + (pixels[newPix[0],newPix[1]][1] - baseColor[1]) + (pixels[newPix[0],newPix[1]][2] - baseColor[2]) + 64)
             print("    " + savedURL, newPix)
@@ -145,7 +145,7 @@ def getSudoRandom(seed, base, top):
     del num
 
     print("hrr")
-    return (returnNum ** 3 - base) % top
+    return min(max((returnNum ** 3 + base) % (top - base), base), top - 1)
 
 #create the object to hold widgets
 root = Tk()
