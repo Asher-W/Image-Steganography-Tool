@@ -6,7 +6,6 @@ from random import randint, seed
 from math import ceil
 import shutil
 import os
-from random import randint
 
 def process():
     URL, name = URLInput.get(), NameInput.get()
@@ -47,7 +46,7 @@ def encode_message(fname, text, URL):
     baseBlue = 0
     for index in range(len(URL)):
         if not index: 
-            newPix = (getSudoRandom(stringToNum(fname.split('/')[-1]) * width, 0, width), getSudoRandom((stringToNum(fname.split('/')[-1]) + height/2) * height, 0, height))
+            newPix = [getSudoRandom(stringToNum(fname.split('/')[-1]) * width, 0, width), getSudoRandom((stringToNum(fname.split('/')[-1]) + height/2) * height, 0, height)]
             if newPix in encoded: 
                 newPix[1] += 1
             encoded.append(newPix)
@@ -55,11 +54,11 @@ def encode_message(fname, text, URL):
             seed = ord(URL[index - 1]) + index * 2
             if index < 10: print(URL[index - 1], index, seed)
             while 1:
-                newPix = (getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height))
+                newPix = [getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height)]
                 if newPix not in encoded: break
                 else: seed += newPix[0] * 2
             encoded.append(newPix)
-            if index < 10: print("    " + URL[:index + 1])
+            if index < 10: print("    " + URL[:index + 1], newPix)
         baseRed += data[encoded[-1][0] + (encoded[-1][1] * width)][0]
         baseGreen += data[encoded[-1][0] + (encoded[-1][1] * width)][1]
         baseBlue += data[encoded[-1][0] + (encoded[-1][1] * width)][2]
@@ -90,6 +89,33 @@ def encode_message(fname, text, URL):
         Blue = ceil(letterVal)
         pixels[point[0], point[1]] = (int(baseRed + Red), int(baseGreen + Green), int(baseBlue + Blue))
 
+    baseColor = pixels[0,0]
+    encodedLen = pixels[0,1]
+    URLLength = (abs(baseColor[0] - encodedLen[0]) + abs(baseColor[1] - encodedLen[1]) + 
+      abs(baseColor[2] - encodedLen[2]))
+    encoded = [(0,0),(0,1)]
+    savedURL = ""
+    for index in range(URLLength):
+        if not index: 
+            newPix = (getSudoRandom(stringToNum("Image.png") * width, 0, width), 
+              getSudoRandom((stringToNum("Image.png") + height/2) * height, 0, height))
+            if newPix in encoded: 
+                newPix[1] += 1
+            savedURL = savedURL + chr((pixels[newPix[0],newPix[1]][0] - baseColor[0]) + (pixels[newPix[0],newPix[1]][1] - baseColor[1]) + 
+              (pixels[newPix[0],newPix[1]][2] - baseColor[2]) + 64)
+            encoded.append(newPix)
+        else:
+            seed = ord(savedURL[-1]) + index * 2
+            print(savedURL[-1], index, seed)
+            while 1:
+                newPix = (getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height))
+                if newPix not in encoded: break
+                else: seed += newPix[0] + 2 * 2
+                print("---------------------------------------")
+            encoded.append(newPix)
+            savedURL = savedURL + chr((pixels[newPix[0],newPix[1]][0] - baseColor[0]) + (pixels[newPix[0],newPix[1]][1] - baseColor[1]) + (pixels[newPix[0],newPix[1]][2] - baseColor[2]) + 64)
+            print("    " + savedURL, newPix)
+
     im.save(fname)
     im.close()
 
@@ -98,9 +124,28 @@ def stringToNum(str : str):
     for i in range(len(str)): total += ord(str[i][0])
     return total
 
-def getSudoRandom(seedNum : int, base : int, top : int):
-    seed(seedNum)
-    return randint(base, top)
+def getSudoRandom(seed, base, top):
+    print("hmmm")
+    seed, base, top = int(seed), int(base), int(top)
+    seedBin = bin(seed)[2:]
+    endbin = bin(top)[2:]
+    extraZeros = len(seedBin) - len(endbin)
+    if extraZeros > 0:
+        for i in range(0, extraZeros, 1): endbin = "0" + endbin
+    if extraZeros < 0:
+        for i in range(0, extraZeros, -1): seedBin = "0" + seedBin
+    returnNum = ""
+    for i in range(len(returnNum)):
+        if returnNum[i] == endbin[i]: returnNum = returnNum + "0"
+        else: returnNum = returnNum + "1"
+    num = 0
+    for i, v in enumerate(returnNum):
+        num += i ** v
+    returnNum = num
+    del num
+
+    print("hrr")
+    return (returnNum ** 3 - base) % top
 
 #create the object to hold widgets
 root = Tk()
