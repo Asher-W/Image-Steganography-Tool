@@ -53,11 +53,13 @@ def encode_message(fname, text, URL):
             encoded.append(newPix)
         else:
             seed = ord(URL[index - 1]) + index * 2
+            if index < 10: print(URL[index - 1], index, seed)
             while 1:
                 newPix = (getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height))
                 if newPix not in encoded: break
                 else: seed += newPix[0] * 2
             encoded.append(newPix)
+            if index < 10: print("    " + URL[:index + 1])
         baseRed += data[encoded[-1][0] + (encoded[-1][1] * width)][0]
         baseGreen += data[encoded[-1][0] + (encoded[-1][1] * width)][1]
         baseBlue += data[encoded[-1][0] + (encoded[-1][1] * width)][2]
@@ -73,13 +75,11 @@ def encode_message(fname, text, URL):
     if baseRed > 128: URL1 *= -1
     URLLen -= ceil(URLLen / 3)
     URL2 = ceil(URLLen / 2)
-    if baseGreen > 128: URL1 *= -1
+    if baseGreen > 128: URL2 *= -1
     URLLen -= ceil(URLLen / 2)
-    if baseBlue > 128: URL1 *= -1
     URL3 = ceil(URLLen)
+    if baseBlue > 128: URL3 *= -1
     pixels[0,1] = (baseRed + URL1, baseGreen + URL2, baseBlue + URL3)
-
-    print(encoded[2])
 
     for index, point in enumerate(encoded[2:]):
         letterVal = ord(URL[index]) - 64

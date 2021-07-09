@@ -20,24 +20,20 @@ def getMessage():
               getSudoRandom((stringToNum("Image.png") + height/2) * height, 0, height))
             if newPix in encoded: 
                 newPix[1] += 1
-            print((pixels[newPix[0],newPix[1]][0] - baseColor[0]) + (pixels[newPix[0],newPix[1]][1] - baseColor[1]) + 
-              (pixels[newPix[0],newPix[1]][2] - baseColor[2]))
             savedURL = savedURL + chr((pixels[newPix[0],newPix[1]][0] - baseColor[0]) + (pixels[newPix[0],newPix[1]][1] - baseColor[1]) + 
               (pixels[newPix[0],newPix[1]][2] - baseColor[2]) + 64)
             encoded.append(newPix)
         else:
             seed = ord(savedURL[-1]) + index * 2
+            print(savedURL[-1], index, seed)
             while 1:
                 newPix = (getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height))
                 if newPix not in encoded: break
                 else: seed += newPix[0] * 2
             encoded.append(newPix)
-            print((pixels[newPix[0],newPix[1]][0] - baseColor[0]) + (pixels[newPix[0],newPix[1]][1] - baseColor[1]) + 
-              (pixels[newPix[0],newPix[1]][2] - baseColor[2]) + 64)
-            print(savedURL)
             savedURL = savedURL + chr((pixels[newPix[0],newPix[1]][0] - baseColor[0]) + (pixels[newPix[0],newPix[1]][1] - baseColor[1]) + 
               (pixels[newPix[0],newPix[1]][2] - baseColor[2]) + 64)
-    print(savedURL)
+            print("    " + savedURL)
 
 def stringToNum(str : str):
     total = 0
