@@ -3,10 +3,10 @@ from PIL import Image
 from requests import get
 from time import sleep
 from random import randint, seed
-from math import ceil, sqrt
+from math import ceil
 import shutil
 import os
-from random import shuffle
+from random import randint
 
 def process():
     URL, name = URLInput.get(), NameInput.get()
@@ -18,11 +18,8 @@ def process():
     
 def download_image(URL, name):
     imageCode = get(URL, stream = True)
-    
-    extension = "." + URL.split(".")[-1].split("/")[0]
-    if len(extension) >= 5: extension = ".png"
 
-    fname = os.path.join("x:/VSCode/code", name + extension)
+    fname = "x:/VSCode/code/" + name + ".png"
 
     #check for unsuccessful connection
     if imageCode.status_code != 200: 
@@ -48,14 +45,14 @@ def encode_message(fname, text, URL):
     baseRed = 0
     baseGreen = 0
     baseBlue = 0
-    for index, char in enumerate(URL):
-        if not index - 1: 
-            newPix = (getSudoRandom(stringToNum(fname.split('/')) * width, 0, width), getSudoRandom((stringToNum(fname.split('/')[-1]) + height/2) * height, 0, height))
+    for index in range(len(URL)):
+        if not index: 
+            newPix = (getSudoRandom(stringToNum(fname.split('/')[-1]) * width, 0, width), getSudoRandom((stringToNum(fname.split('/')[-1]) + height/2) * height, 0, height))
             if newPix in encoded: 
                 newPix[1] += 1
             encoded.append(newPix)
         else:
-            seed = ord(char) + index * 2
+            seed = ord(URL[index - 1]) + index * 2
             while 1:
                 newPix = (getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height))
                 if newPix not in encoded: break
@@ -80,15 +77,12 @@ def encode_message(fname, text, URL):
     URLLen -= ceil(URLLen / 2)
     if baseBlue > 128: URL1 *= -1
     URL3 = ceil(URLLen)
-    print(pixels[0,1])
-    print(pixels[0,0])
     pixels[0,1] = (baseRed + URL1, baseGreen + URL2, baseBlue + URL3)
-    print(URL1, URL2, URL3)
-    print(pixels[0,1])
 
+    print(encoded[2])
 
     for index, point in enumerate(encoded[2:]):
-        letterVal = ord(URL[index]) - 74 if ord(URL[index]) >= 64 else 13 # convert a to -13
+        letterVal = ord(URL[index]) - 64
         Red = ceil(letterVal/3)
         letterVal -= ceil(letterVal/3)
         Green = ceil(letterVal / 2)
@@ -96,6 +90,7 @@ def encode_message(fname, text, URL):
         Blue = ceil(letterVal)
         pixels[point[0], point[1]] = (int(baseRed + Red), int(baseGreen + Green), int(baseBlue + Blue))
 
+    im.save(fname)
     im.close()
 
 def stringToNum(str : str):
@@ -106,9 +101,6 @@ def stringToNum(str : str):
 def getSudoRandom(seedNum : int, base : int, top : int):
     seed(seedNum)
     return randint(base, top)
-
-imag = Image.open("X:/Vscode/code/Image.jpg")
-print(imag.load()[0,1])
 
 #create the object to hold widgets
 root = Tk()
