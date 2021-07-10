@@ -20,19 +20,16 @@ def getMessage():
               getSudoRandom((stringToNum("Image.png") + height/2) * height, 0, height)]
             if newPix in encoded: 
                 newPix[1] += 1
-            savedURL = savedURL + chr((pixels[newPix[0],newPix[1]][0] - baseColor[0]) + (pixels[newPix[0],newPix[1]][1] - baseColor[1]) + 
-              (pixels[newPix[0],newPix[1]][2] - baseColor[2]) + 64)
-            encoded.append(newPix)
         else:
             seed = ord(savedURL[-1]) + index * 2
             while 1:
                 newPix = [getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height)]
                 if newPix not in encoded: break
                 seed += newPix[0] * 2 + 1
-            encoded.append(newPix)
-            savedURL = savedURL + chr((pixels[newPix[0],newPix[1]][0] - baseColor[0]) + (pixels[newPix[0],newPix[1]][1] - baseColor[1]) + 
-              (pixels[newPix[0],newPix[1]][2] - baseColor[2]) + 64)
-            print(savedURL)
+        encoded.append(newPix)
+        savedURL = savedURL + chr((pixels[newPix[0],newPix[1]][0] - baseColor[0]) + (pixels[newPix[0],newPix[1]][1] - baseColor[1]) + 
+          (pixels[newPix[0],newPix[1]][2] - baseColor[2]) + 64)
+        print(savedURL)
 
 def stringToNum(str : str):
     total = 0
@@ -52,14 +49,12 @@ def getSudoRandom(seed, base, top):
     for i in range(len(endBin)):
         if seedBin[i] == endBin[i]: returnNum = returnNum + "0"
         else: returnNum = returnNum + "1"
-    print(returnNum)
     num = 0
     for i, v in enumerate(returnNum):
         num += int(v) * 2 ** i
     returnNum = num
     del num
 
-    print(returnNum)
     return min(max((returnNum ** 3 + base) ** 2 % (top - base), base), top - 1)
 
 getMessage()

@@ -4,37 +4,22 @@ from requests import get
 from time import sleep
 from random import randint, seed
 from math import ceil
-import shutil
-import os
+from io import BytesIO
 
 def process():
     URL, name = URLInput.get(), NameInput.get()
     text = "".join([i for i in NameInput.get() if i.isalpha()]).lower()
-
-    fname = download_image(URL, name)
     
-    encode_message(fname, text, URL)
-    
-def download_image(URL, name):
-    imageCode = get(URL, stream = True)
+    encode_message(name, text, URL)
 
-    fname = "x:/VSCode/code/" + name + ".png"
-
-    #check for unsuccessful connection
-    if imageCode.status_code != 200: 
-        print("failure, path:", fname)
+def encode_message(name, text, URL):
+    request = get(URL)
+    if request.status_code != 200:
+        print("Connection Issue, error code: {}".format(request.status_code))
         sleep(2)
-        return download_image(URL, name)
-
-    imageCode.raw.decode_content = True
-
-    with open(fname, "wb") as embed:
-        shutil.copyfileobj(imageCode.raw, embed)
-
-    return fname
-
-def encode_message(fname, text, URL):
-    im = Image.open(fname)
+        return
+    im = Image.open(BytesIO(request.content))
+    fname = "x:/VSCode/code/" + name + ".png"
     width, height = im.size
 
     data = list(im.getdata())
@@ -46,17 +31,17 @@ def encode_message(fname, text, URL):
     baseBlue = 0
     for index in range(len(URL)):
         if not index: 
-            newPix = [getSudoRandom(stringToNum(fname.split('/')[-1]) * width, 0, width), getSudoRandom((stringToNum(fname.split('/')[-1]) + height/2) * height, 0, height)]
+            newPix = [getSudoRandom(stringToNum(fname.split('/')[-1]) * width, 0, width), 
+              getSudoRandom((stringToNum(fname.split('/')[-1]) + height/2) * height, 0, height)]
             if newPix in encoded: 
                 newPix[1] += 1
-            encoded.append(newPix)
         else:
             seed = ord(URL[index - 1]) + index * 2
             while 1:
                 newPix = [getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height)]
                 if newPix not in encoded: break
                 seed += newPix[0] * 2 + 1
-            encoded.append(newPix)
+        encoded.append(newPix)
         baseRed += data[encoded[-1][0] + (encoded[-1][1] * width)][0]
         baseGreen += data[encoded[-1][0] + (encoded[-1][1] * width)][1]
         baseBlue += data[encoded[-1][0] + (encoded[-1][1] * width)][2]
