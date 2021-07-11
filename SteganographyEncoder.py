@@ -78,7 +78,7 @@ def encode_message(name, text, URL):
             if newPix not in encoded: break
             seed = getSudoRandom(seed, 0, width) + posChange
             posChange += 1
-        
+        encoded.append(newPix)
         letterVal = max(ord(v), 1)
         colors = pixels[newPix[0], newPix[1]]
         Red = ceil(letterVal/3)
@@ -91,7 +91,6 @@ def encode_message(name, text, URL):
 
         if colors[2] > 128: Blue *= -1
         pixels[newPix[0], newPix[1]] = (colors[0] + Red, colors[1] + Green, colors[2] + Blue)
-        print(pixels[newPix[0], newPix[1]], newPix, i)
     im.save(fname)
     im.close()
 

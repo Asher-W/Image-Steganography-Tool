@@ -29,7 +29,6 @@ def getMessage():
         pixelColor = pixels[newPix[0],newPix[1]]
         savedURL = savedURL + chr(abs(baseColor[0] - pixelColor[0]) + abs(baseColor[1] - pixelColor[1]) + 
           abs(baseColor[2] - pixelColor[2]))
-    print(savedURL)
     request = get(savedURL)
     if request.status_code != 200:
         print("Connection Issue, error code: {}".format(request.status_code))
@@ -47,17 +46,16 @@ def getMessage():
             if newPix not in encoded: break
             seed = getSudoRandom(seed, 0, width) + posChange
             posChange += 1
+        encoded.append(newPix)
         unEditColor = unEditPix[newPix[0], newPix[1]]
         Color = pixels[newPix[0], newPix[1]]
         if unEditColor == Color: break
         savedText = savedText + chr(abs(Color[0] - unEditColor[0]) + abs(Color[1] - unEditColor[1]) + 
           abs(Color[2] - unEditColor[2]))
-        print(Color, newPix, i)
         i += 1
     del i
 
     print(savedText)
-    for i in savedText: print(ord(i))
 
 def stringToNum(str : str):
     total = 0
