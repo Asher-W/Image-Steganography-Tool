@@ -1,11 +1,12 @@
+from tkinter import Tk, Frame, Label, Entry, Button, filedialog, BOTH, StringVar
 from PIL import Image
 from requests import get
 from io import BytesIO
 
 import requests
 
-def getMessage():
-    im = Image.open("X:/Vscode/code/Image.png")
+def getMessage(file):
+    im = Image.open(file)
     width, height = im.size
 
     pixels = im.load()
@@ -55,7 +56,7 @@ def getMessage():
         i += 1
     del i
 
-    print(savedText)
+    TextOutput["text"] = savedText
 
 def stringToNum(str : str):
     total = 0
@@ -83,4 +84,32 @@ def getSudoRandom(seed, base, top):
 
     return min(max(((returnNum ** 3 + base) ** 2 % (top - base)) + base, base), top - 1)
 
-getMessage()
+def select_file():
+    file = filedialog.askopenfilename(initialdir= "/")
+    getMessage(file)
+#create the object to hold widgets
+root = Tk()
+#edit geometry of the window
+root.geometry("500x500")
+root.resizable(0,0)
+
+#whole storage area
+mainFrame = Frame(root)
+
+#find the image
+file_select = Button(mainFrame, command = select_file, text = "file")
+
+#take text details
+TextLabel = Label(mainFrame, text="Encoded text")
+TextOutput = Label(mainFrame, text = "no file selected")
+
+#show widgets (using pack)
+mainFrame.pack(expand=1,fill=BOTH, padx = 10, pady = 10)
+
+file_select.pack()
+
+TextLabel.pack()
+TextOutput.pack()
+
+#show the window and widgets
+root.mainloop()
