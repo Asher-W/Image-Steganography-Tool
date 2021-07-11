@@ -1,6 +1,8 @@
-from random import seed, randint
 from PIL import Image
-import os
+from requests import get
+from io import BytesIO
+
+import requests
 
 def getMessage():
     im = Image.open("X:/Vscode/code/Image.png")
@@ -12,24 +14,50 @@ def getMessage():
 
     URLLength = (abs(baseColor[0] - encodedLen[0]) + abs(baseColor[1] - encodedLen[1]) + 
       abs(baseColor[2] - encodedLen[2]))
-    encoded = [(0,0),(0,1)]
+    encoded = [[0,0],[0,1]]
     savedURL = ""
     for index in range(URLLength):
-        if not index: 
-            newPix = [getSudoRandom(stringToNum("Image.png") * width, 0, width), 
-              getSudoRandom((stringToNum("Image.png") + height/2) * height, 0, height)]
-            if newPix in encoded: 
-                newPix[1] += 1
-        else:
-            seed = ord(savedURL[-1]) + index * 2
-            while 1:
-                newPix = [getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height)]
-                if newPix not in encoded: break
-                seed += newPix[0] * 2 + 1
+        if not index: seed = stringToNum("Image.png") + 1
+        else: seed = ord(savedURL[-1]) + index * 2
+        posChange = 1
+        while 1:
+            newPix = [getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height)]
+            if newPix not in encoded: break
+            seed = getSudoRandom(seed, 0, width) + posChange
+            posChange += 1
         encoded.append(newPix)
-        savedURL = savedURL + chr((pixels[newPix[0],newPix[1]][0] - baseColor[0]) + (pixels[newPix[0],newPix[1]][1] - baseColor[1]) + 
-          (pixels[newPix[0],newPix[1]][2] - baseColor[2]) + 64)
-        print(savedURL)
+        pixelColor = pixels[newPix[0],newPix[1]]
+        savedURL = savedURL + chr(abs(baseColor[0] - pixelColor[0]) + abs(baseColor[1] - pixelColor[1]) + 
+          abs(baseColor[2] - pixelColor[2]))
+    print(savedURL)
+    request = get(savedURL)
+    if request.status_code != 200:
+        print("Connection Issue, error code: {}".format(request.status_code))
+        return
+    unEdit = Image.open(BytesIO(request.content))
+    unEditPix = unEdit.load()
+    i = 0
+    savedText = ""
+    while 1:
+        if not i: seed = ord(savedURL[-1]) + 1
+        else: seed = ord(savedText[i - 1]) + index * 2
+        posChange = 1
+        while 1:
+            newPix = [getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height)]
+            if newPix not in encoded: break
+            seed = getSudoRandom(seed, 0, width) + posChange
+            posChange += 1
+        unEditColor = unEditPix[newPix[0], newPix[1]]
+        Color = pixels[newPix[0], newPix[1]]
+        if unEditColor == Color: break
+        savedText = savedText + chr(abs(Color[0] - unEditColor[0]) + abs(Color[1] - unEditColor[1]) + 
+          abs(Color[2] - unEditColor[2]))
+        print(Color, newPix, i)
+        i += 1
+    del i
+
+    print(savedText)
+    for i in savedText: print(ord(i))
 
 def stringToNum(str : str):
     total = 0
@@ -55,6 +83,6 @@ def getSudoRandom(seed, base, top):
     returnNum = num
     del num
 
-    return min(max((returnNum ** 3 + base) ** 2 % (top - base), base), top - 1)
+    return min(max(((returnNum ** 3 + base) ** 2 % (top - base)) + base, base), top - 1)
 
 getMessage()

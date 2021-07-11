@@ -2,13 +2,11 @@ from tkinter import Tk, Frame, Label, Entry, Button, BOTH
 from PIL import Image
 from requests import get
 from time import sleep
-from random import randint, seed
 from math import ceil
 from io import BytesIO
 
 def process():
-    URL, name = URLInput.get(), NameInput.get()
-    text = "".join([i for i in NameInput.get() if i.isalpha()]).lower()
+    URL, text, name = URLInput.get(), TextInput.get(), NameInput.get()
     
     encode_message(name, text, URL)
 
@@ -16,7 +14,6 @@ def encode_message(name, text, URL):
     request = get(URL)
     if request.status_code != 200:
         print("Connection Issue, error code: {}".format(request.status_code))
-        sleep(2)
         return
     im = Image.open(BytesIO(request.content))
     fname = "x:/VSCode/code/" + name + ".png"
@@ -25,30 +22,27 @@ def encode_message(name, text, URL):
     data = list(im.getdata())
     pixels = im.load()
     
-    encoded = [(0,0),(0,1)]
+    encoded = [[0,0],[0,1],[0,3]]
     baseRed = 0
     baseGreen = 0
     baseBlue = 0
     for index in range(len(URL)):
-        if not index: 
-            newPix = [getSudoRandom(stringToNum(fname.split('/')[-1]) * width, 0, width), 
-              getSudoRandom((stringToNum(fname.split('/')[-1]) + height/2) * height, 0, height)]
-            if newPix in encoded: 
-                newPix[1] += 1
-        else:
-            seed = ord(URL[index - 1]) + index * 2
-            while 1:
-                newPix = [getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height)]
-                if newPix not in encoded: break
-                seed += newPix[0] * 2 + 1
+        if not index: seed = stringToNum(fname.split('/')[-1]) + 1
+        else: seed = ord(URL[index - 1]) + index * 2
+        posChange = 1
+        while 1:
+            newPix = [getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height)]
+            if newPix not in encoded: break
+            seed = getSudoRandom(seed, 0, width) + posChange
+            posChange += 1
         encoded.append(newPix)
         baseRed += data[encoded[-1][0] + (encoded[-1][1] * width)][0]
         baseGreen += data[encoded[-1][0] + (encoded[-1][1] * width)][1]
         baseBlue += data[encoded[-1][0] + (encoded[-1][1] * width)][2]
 
-    baseRed = int(baseRed / len(encoded))
-    baseGreen = int(baseRed / len(encoded))
-    baseBlue = int(baseBlue / len(encoded))
+    baseRed = max(int(baseRed / len(encoded)), 65)
+    baseGreen = max(int(baseRed / len(encoded)), 65)
+    baseBlue =  max(int(baseBlue / len(encoded)), 65)
 
     pixels[0,0] = (baseRed, baseGreen, baseBlue)
 
@@ -63,15 +57,41 @@ def encode_message(name, text, URL):
     if baseBlue > 128: URL3 *= -1
     pixels[0,1] = (baseRed + URL1, baseGreen + URL2, baseBlue + URL3)
 
-    for index, point in enumerate(encoded[2:]):
-        letterVal = ord(URL[index]) - 64
+    for index, point in enumerate(encoded[3:]):
+        letterVal = ord(URL[index])
         Red = ceil(letterVal/3)
+        if baseRed > 128: Red *= -1
         letterVal -= ceil(letterVal/3)
         Green = ceil(letterVal / 2)
+        if baseGreen > 128: Green *= -1
         letterVal -= ceil(letterVal / 2)
         Blue = ceil(letterVal)
-        pixels[point[0], point[1]] = (int(baseRed + Red), int(baseGreen + Green), int(baseBlue + Blue))
+        if baseBlue > 128: Blue *= -1
+        pixels[point[0], point[1]] = (baseRed + Red, baseGreen + Green, baseBlue + Blue)
+    
+    for i, v in enumerate(text):
+        if not i: seed = ord(URL[-1]) + 1
+        else: seed = ord(text[i - 1]) + index * 2
+        posChange = 1
+        while 1:
+            newPix = [getSudoRandom(seed * width, 0, width), getSudoRandom((seed + height/2) * height, 0, height)]
+            if newPix not in encoded: break
+            seed = getSudoRandom(seed, 0, width) + posChange
+            posChange += 1
+        
+        letterVal = max(ord(v), 1)
+        colors = pixels[newPix[0], newPix[1]]
+        Red = ceil(letterVal/3)
+        if colors[0] > 128: Red *= -1
+        letterVal -= ceil(letterVal/3)
+        Green = ceil(letterVal / 2)
+        if colors[1] > 128: Green *= -1
+        letterVal -= ceil(letterVal / 2)
+        Blue = ceil(letterVal)
 
+        if colors[2] > 128: Blue *= -1
+        pixels[newPix[0], newPix[1]] = (colors[0] + Red, colors[1] + Green, colors[2] + Blue)
+        print(pixels[newPix[0], newPix[1]], newPix, i)
     im.save(fname)
     im.close()
 
@@ -98,7 +118,7 @@ def getSudoRandom(seed, base, top):
         num += int(v) * 2 ** i
     returnNum = num
     del num
-    return min(max((returnNum ** 3 + base) ** 2 % (top - base), base), top - 1)
+    return min(max(((returnNum ** 3 + base) ** 2 % (top - base)) + base, base), top - 1)
 
 #create the object to hold widgets
 root = Tk()
@@ -138,5 +158,4 @@ Button(mainFrame, command = process, text = "process").pack()
 #show the window and widgets
 root.mainloop()
 
-#image = open("file.png", "wb")
-#image.write(get("https://ichef.bbci.co.uk/news/976/cpsprodpb/E39C/production/_111686285_pic2.png").content)
+#https://sargeant.rcsdk8.org/sites/main/files/main-images/camera_lense_0.jpeg
