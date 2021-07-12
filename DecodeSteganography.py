@@ -106,8 +106,8 @@ def get_sudo_random(seed, base, top):
     
     #convert the number back to integer
     num = 0
-    for i, v in enumerate(return_num):
-        num += int(v) * 2 ** i
+    for index, value in enumerate(return_num):
+        num += int(value) * 2 ** index
     return_num = num
     del num
 
