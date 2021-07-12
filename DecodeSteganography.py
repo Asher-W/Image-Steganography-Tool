@@ -4,11 +4,11 @@ from PIL import Image
 from requests import get
 from io import BytesIO
 
-def getMessage(file):
+def getMessage(file_name):
     # make sure the file is selected
-    if ".png" not in file: return
+    if ".png" not in file_name: return
     # open the slelected file and get base info 
-    im = Image.open(file)
+    im = Image.open(file_name)
     width, height = im.size
     pixels = im.load()
 
@@ -22,11 +22,10 @@ def getMessage(file):
 
     saved_URL = ""
     for index in range(URL_length):
-        if not index: seed = string_to_num("Image.png") + 1 # assigns the seed for the first character
+        if not index: seed = string_to_num(file_name.split('/')[-1]) + 1 # assigns the seed for the first character
         else: seed = ord(saved_URL[-1]) + index * 2 # uses the ascii value of the previous character and the index to assign the seed
 
         pos_change = 1 # use a incrementing value, so seed canges can't get stuck in a loop
-
         # get the new pixel to read from and verify that it isn't already in use
         while 1:
             new_pix = [get_sudo_random(seed * width, 0, width), get_sudo_random((seed + height/2) * height, 0, height)]
@@ -111,7 +110,7 @@ def get_sudo_random(seed, base, top):
     return_num = num
     del num
 
-    return min(max(((return_num ** 3 + base) ** 2 % (top - base)) + base, base), top - 1) #further randomize the return num
+    return min(max(((return_num ** 3 + base) ** 2 % (top - base)) + base, base), top - 1) #further randomize the returned number
 
 #run the getMessage function and ask for the png file
 def select_file():
