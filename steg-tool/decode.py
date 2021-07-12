@@ -116,25 +116,27 @@ def get_sudo_random(seed, base, top):
 def select_file():
     getMessage(filedialog.askopenfilename(initialdir= "/", filetypes=(("png files", "png {*.png}"))))
 
-# create the object to hold widgets
-root = tk.Tk()
-#edit geometry of the window
-root.geometry("500x500")
-root.resizable(0,0)
+# don't execute if the file is imported
+if __name__ == "__main__":
+    # create the object to hold widgets
+    root = tk.Tk()
+    # edit geometry of the window
+    root.geometry("500x500")
+    root.resizable(0,0)
 
-# whole storage area
-mainFrame = tk.Frame(root)
+    # whole storage area
+    main_frame = tk.Frame(root)
 
-# find the image
-file_label = tk.Label(mainFrame, text = "select your file", font = "Verdana 15").pack()
-file_select = tk.Button(mainFrame, command = select_file, text = "file").pack(pady = 10)
+    # find the image
+    file_label = tk.Label(main_frame, text = "select your file", font = "Verdana 15").pack()
+    file_select = tk.Button(main_frame, command = select_file, text = "file").pack(pady = 10)
 
-# take text details
-TextLabel = tk.Label(mainFrame, text="Encoded text", font = "Verdana 15").pack(pady = 20)
-TextOutput = tk.Label(mainFrame, text = "no file selected").pack()
+    # take text details
+    TextLabel = tk.Label(main_frame, text="Encoded text", font = "Verdana 15").pack(pady = 20)
+    TextOutput = tk.Label(main_frame, text = "no file selected").pack()
 
-# show widgets (using pack)
-mainFrame.pack(expand=1,fill=tk.BOTH, padx = 10, pady = 10)
+    # show widgets (using pack)
+    main_frame.pack(expand=1,fill=tk.BOTH, padx = 10, pady = 10)
 
-# show the window and widgets
-root.mainloop()
+    # show the window and widgets
+    root.mainloop()

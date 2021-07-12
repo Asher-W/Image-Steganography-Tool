@@ -4,8 +4,8 @@ from requests import get
 from io import BytesIO
 
 # get the input values and pass it onto the encode function
-def process(URLInput, TextInput, NameInput):
-    URL, text, name = URLInput.get(), TextInput.get(), NameInput.get()
+def process(URL_input, text_input, name_input):
+    URL, text, name = URL_input.get(), text_input.get(), name_input.get()
     
     encode_message(name, text, URL)
 
@@ -176,45 +176,47 @@ def select_folder():
     folder = tk.filedialog.askdirectory(initialdir="")
     print(folder)
 
-#create the object to hold widgets
-root = tk.Tk()
-#edit geometry of the window
-root.geometry("500x500")
-root.resizable(0,0)
+# don't execute if the file is imported
+if __name__ == "__main__":
+    # create the object to hold widgets
+    root = tk.Tk()
+    # edit geometry of the window
+    root.geometry("500x500")
+    root.resizable(0,0)
 
-#whole storage area
-mainFrame = tk.Frame(root)
+    # whole storage area
+    main_frame = tk.Frame(root)
 
-#take image details
-URLLabel = tk.Label(mainFrame, text="Image URL")
-URLInput = tk.Text(mainFrame, width = 50, height = 2)
+    # take image details
+    URL_label = tk.Label(main_frame, text="Image URL")
+    URL_input = tk.Text(main_frame, width = 50, height = 2)
 
-#take image details
-NameLabel = tk.Label(mainFrame, text="Image file Name (always a png)")
-NameInput = tk.Entry(mainFrame)
+    # take image details
+    name_label = tk.Label(main_frame, text="Image file Name (always a png)")
+    name_input = tk.Entry(main_frame)
 
-#find where to store the image
-folder = "/"
-folder_select = tk.Button(mainFrame, command = select_folder, text = "folder")
+    # find where to store the image
+    folder = "/"
+    folder_select = tk.Button(main_frame, command = select_folder, text = "folder")
 
-#take text details
-TextLabel = tk.Label(mainFrame, text="Encoded text")
-TextInput = tk.Text(mainFrame, width = 75, height = 10)
+    # take text details
+    text_label = tk.Label(main_frame, text="Encoded text")
+    text_input = tk.Text(main_frame, width = 75, height = 10)
 
-#show widgets (using pack)
-mainFrame.pack(expand=1,fill=tk.BOTH, padx = 10, pady = 10)
+    # show widgets (using pack)
+    main_frame.pack(expand=1,fill=tk.BOTH, padx = 10, pady = 10)
 
-URLLabel.pack()
-URLInput.pack()
-NameLabel.pack()
-NameInput.pack()
-folder_select.pack()
+    URL_label.pack()
+    URL_input.pack()
+    name_label.pack()
+    name_input.pack()
+    folder_select.pack()
 
-TextLabel.pack()
-TextInput.pack()
+    text_label.pack()
+    text_input.pack()
 
-#submit button
-tk.Button(mainFrame, command = lambda: process(URLInput, NameInput, TextInput), text = "process").pack()
+    # submit button
+    tk.Button(main_frame, command = lambda: process(URL_input, name_input, text_input), text = "process").pack()
 
-#show the window and widgets
-root.mainloop()
+    # show the window and widgets
+    root.mainloop()
