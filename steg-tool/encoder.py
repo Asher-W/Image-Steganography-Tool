@@ -90,6 +90,9 @@ def encode_message(file_name, text, URL):
         # find the ascii value for the character being encoded
         letter_val = ord(URL[index])
 
+        # make sure the character is ascii
+        if not 0 <= letter_val <= 255: continue
+        
         # distribute the number over RGB values
         red = int(letter_val/3)
         if base_red > 128: red *= -1
