@@ -43,9 +43,9 @@ def encode_message(file_name, text, URL):
         pos_change = 1 # use a incrementing value, so seed canges can't get stuck in a loop
         # get the new pixel to read from and verify that it isn't already in use
         while 1:
-            new_pix = [sf.get_sudo_random(seed * width, 0, width), sf.get_sudo_random((seed + height/2) * height, 0, height)]
+            new_pix = [sf.get_pseudorandom(seed * width, 0, width), sf.get_pseudorandom((seed + height/2) * height, 0, height)]
             if new_pix not in encoded_pix: break
-            seed = sf.get_sudo_random(seed, 0, width) + pos_change
+            seed = sf.get_pseudorandom(seed, 0, width) + pos_change
             pos_change += 1
         
         encoded_pix.append(new_pix)
@@ -106,9 +106,9 @@ def encode_message(file_name, text, URL):
         pos_change = 1 # use a incrementing value, so seed canges can't get stuck in a loop
         # get the new pixel to write to and verify that it isn't already in use
         while 1:
-            new_pix = [sf.get_sudo_random(seed * width, 0, width), sf.get_sudo_random((seed + height/2) * height, 0, height)]
+            new_pix = [sf.get_pseudorandom(seed * width, 0, width), sf.get_pseudorandom((seed + height/2) * height, 0, height)]
             if new_pix not in encoded_pix: break
-            seed = sf.get_sudo_random(seed, 0, width) + pos_change
+            seed = sf.get_pseudorandom(seed, 0, width) + pos_change
             pos_change += 1
 
         encoded_pix.append(new_pix)

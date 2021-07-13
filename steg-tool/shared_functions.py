@@ -5,7 +5,7 @@ def string_to_num(str : str):
     return total
 
 #take in a seed base and top to give a semi-random number
-def get_sudo_random(seed, base, top):
+def get_pseudorandom(seed, base, top):
     seed, base, top = int(seed), int(base), int(top) # make sure inputs are the proper format
     
     #remove the 0b string from the beggining of the binary string
