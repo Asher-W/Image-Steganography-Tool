@@ -1,12 +1,11 @@
-import tkinter as tk
 from PIL import Image
 from requests import get
+import shared_functions as sf
 from io import BytesIO
 
 # get the input values and pass it onto the encode function
-def process(URL_input, text_input, name_input, folder):
-    URL, text, name = URL_input.get(), text_input.get(), name_input.get()
-    
+def process(URL, text, name, folder):
+    if ":" not in folder: return
     name = folder + "/" + name + ".png" # make a path variable to the file
     
     encode_message(name, text, URL)
@@ -38,15 +37,15 @@ def encode_message(file_name, text, URL):
 
     # loop through the URL and find where to puth the encoded pixels
     for index in range(len(URL)):
-        if not index: seed = string_to_num(file_name.split('/')[-1]) + 1 # get a seed based on the file name
+        if not index: seed = sf.string_to_num(file_name.split('/')[-1]) + 1 # get a seed based on the file name
         else: seed = ord(URL[index - 1]) + index * 2 # get a seed based on the previous character's ascii value and index
 
         pos_change = 1 # use a incrementing value, so seed canges can't get stuck in a loop
         # get the new pixel to read from and verify that it isn't already in use
         while 1:
-            new_pix = [get_sudo_random(seed * width, 0, width), get_sudo_random((seed + height/2) * height, 0, height)]
+            new_pix = [sf.get_sudo_random(seed * width, 0, width), sf.get_sudo_random((seed + height/2) * height, 0, height)]
             if new_pix not in encoded_pix: break
-            seed = get_sudo_random(seed, 0, width) + pos_change
+            seed = sf.get_sudo_random(seed, 0, width) + pos_change
             pos_change += 1
         
         encoded_pix.append(new_pix)
@@ -107,9 +106,9 @@ def encode_message(file_name, text, URL):
         pos_change = 1 # use a incrementing value, so seed canges can't get stuck in a loop
         # get the new pixel to write to and verify that it isn't already in use
         while 1:
-            new_pix = [get_sudo_random(seed * width, 0, width), get_sudo_random((seed + height/2) * height, 0, height)]
+            new_pix = [sf.get_sudo_random(seed * width, 0, width), sf.get_sudo_random((seed + height/2) * height, 0, height)]
             if new_pix not in encoded_pix: break
-            seed = get_sudo_random(seed, 0, width) + pos_change
+            seed = sf.get_sudo_random(seed, 0, width) + pos_change
             pos_change += 1
 
         encoded_pix.append(new_pix)
@@ -135,39 +134,3 @@ def encode_message(file_name, text, URL):
 
     im.save(file_name) # save the image code to the png file
     im.close() # close the file reference
-
-#convert a supplied string to a usable integer
-def string_to_num(str : str):
-    total = 0
-    for i in range(len(str)): total += ord(str[i][0])
-    return total
-
-#take in a seed base and top to give a semi-random number
-def get_sudo_random(seed, base, top):
-    seed, base, top = int(seed), int(base), int(top) # make sure inputs are the proper format
-    
-    #remove the 0b string from the beggining of the binary string
-    seed_binary = bin(seed)[2:]
-    top_binary = bin(top)[2:]
-
-    #make sure both strings are the same length, and add to the begging of the shorter one
-    extra_zeros = len(seed_binary) - len(top_binary)
-    if extra_zeros > 0:
-        for i in range(0, extra_zeros, 1): top_binary = "0" + top_binary
-    if extra_zeros < 0:
-        for i in range(0, extra_zeros, -1): seed_binary = "0" + seed_binary
-    
-    #preform and XOR (exclusive or) function on the top and seed binary
-    return_num = ""
-    for index in range(len(top_binary)):
-        if seed_binary[i] == top_binary[index]: return_num = return_num + "0"
-        else: return_num = return_num + "1"
-    
-    #convert the number back to integer
-    num = 0
-    for index, value in enumerate(return_num):
-        num += int(value) * 2 ** index
-    return_num = num
-    del num
-
-    return min(max(((return_num ** 3 + base) ** 2 % (top - base)) + base, base), top - 1) #further randomize the returned number

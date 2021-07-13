@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import filedialog
 import decoder
 import encoder
 
@@ -21,6 +22,7 @@ def open_encoder():
     name_input = tk.Entry(main_frame)
 
     # find where to store the image
+    global folder 
     folder = "/"
     folder_select = tk.Button(main_frame, command = select_folder, text = "folder")
 
@@ -41,11 +43,13 @@ def open_encoder():
     text_input.pack()
 
     # submit button
-    tk.Button(main_frame, command = lambda: encoder.process(URL_input, name_input, text_input), text = "process").pack()
+    submit = tk.Button(main_frame, command = lambda: encoder.process(URL_input.get("1.0","end"), 
+      text_input.get("1.0","end"), name_input.get(), folder), text = "process").pack()
 
 # ask for a folder to write to
 def select_folder():
-    folder = tk.filedialog.askdirectory(initialdir="")
+    global folder
+    if folder: folder = filedialog.askdirectory(initialdir="")
 
 def open_decoder():
     # create the object to hold widgets
@@ -58,21 +62,24 @@ def open_decoder():
     main_frame = tk.Frame(root)
 
     # find the image
-    file_label = tk.Label(main_frame, text = "select your file", font = "Verdana 15").pack()
-    file_select = tk.Button(main_frame, command = select_file, text = "file").pack(pady = 10)
+    tk.Label(main_frame, text = "select your file", font = "Verdana 15").pack()
+    tk.Button(main_frame, command = select_file, text = "file").pack(pady = 10)
 
     # take text details
-    TextLabel = tk.Label(main_frame, text="Encoded text", font = "Verdana 15").pack(pady = 20)
-    TextOutput = tk.Label(main_frame, text = "no file selected").pack()
+    tk.Label(main_frame, text="Encoded text", font = "Verdana 15").pack(pady = 20)
+    global text_output
+    text_output = tk.Label(main_frame, text = "no file selected")
+    text_output.pack()
 
     # show widgets (using pack)
     main_frame.pack(expand=1,fill=tk.BOTH, padx = 10, pady = 10)
 
-    # show the window and widgets
-
 #run the getMessage function and ask for the png file
 def select_file():
-    decoder.getMessage(tk.filedialog.askopenfilename(initialdir= "/", filetypes=(("png files", "png {*.png}"))))
+    file = filedialog.askopenfilename(initialdir= "/", filetypes=(("png files", "png {*.png}")))
+    if file: 
+        global text_output
+        text_output["text"] = decoder.getMessage(file)
 
 # only run if this is the root folder
 if __name__ == "__main__":
