@@ -4,13 +4,15 @@ from requests import get
 from io import BytesIO
 
 # get the input values and pass it onto the encode function
-def process(URL_input, text_input, name_input):
+def process(URL_input, text_input, name_input, folder):
     URL, text, name = URL_input.get(), text_input.get(), name_input.get()
+    
+    name = folder + "/" + name + ".png" # make a path variable to the file
     
     encode_message(name, text, URL)
 
 # encode the text variable in the image
-def encode_message(name, text, URL):
+def encode_message(file_name, text, URL):
     # get the image info from the url
     request = get(URL)
     if request.status_code != 200:
@@ -18,7 +20,6 @@ def encode_message(name, text, URL):
         return
     
     im = Image.open(BytesIO(request.content)) # use BytesIO to convert the request to usable image code
-    file_name = folder + "/" + name + ".png" # make a path variable to the file
 
     width, height = im.size # get image information
 
@@ -170,53 +171,3 @@ def get_sudo_random(seed, base, top):
     del num
 
     return min(max(((return_num ** 3 + base) ** 2 % (top - base)) + base, base), top - 1) #further randomize the returned number
-
-# ask for a folder to write to
-def select_folder():
-    folder = tk.filedialog.askdirectory(initialdir="")
-    print(folder)
-
-# don't execute if the file is imported
-if __name__ == "__main__":
-    # create the object to hold widgets
-    root = tk.Tk()
-    # edit geometry of the window
-    root.geometry("500x500")
-    root.resizable(0,0)
-
-    # whole storage area
-    main_frame = tk.Frame(root)
-
-    # take image details
-    URL_label = tk.Label(main_frame, text="Image URL")
-    URL_input = tk.Text(main_frame, width = 50, height = 2)
-
-    # take image details
-    name_label = tk.Label(main_frame, text="Image file Name (always a png)")
-    name_input = tk.Entry(main_frame)
-
-    # find where to store the image
-    folder = "/"
-    folder_select = tk.Button(main_frame, command = select_folder, text = "folder")
-
-    # take text details
-    text_label = tk.Label(main_frame, text="Encoded text")
-    text_input = tk.Text(main_frame, width = 75, height = 10)
-
-    # show widgets (using pack)
-    main_frame.pack(expand=1,fill=tk.BOTH, padx = 10, pady = 10)
-
-    URL_label.pack()
-    URL_input.pack()
-    name_label.pack()
-    name_input.pack()
-    folder_select.pack()
-
-    text_label.pack()
-    text_input.pack()
-
-    # submit button
-    tk.Button(main_frame, command = lambda: process(URL_input, name_input, text_input), text = "process").pack()
-
-    # show the window and widgets
-    root.mainloop()

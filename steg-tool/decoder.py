@@ -74,7 +74,7 @@ def getMessage(file_name):
 
         index += 1 #increment the index value for the next loop
 
-    TextOutput["text"] = saved_text # update the tkinter window to display found text
+    return saved_text # update the tkinter window to display found text
 
 #convert a supplied string to a usable integer
 def string_to_num(str : str):
@@ -111,32 +111,3 @@ def get_sudo_random(seed, base, top):
     del num
 
     return min(max(((return_num ** 3 + base) ** 2 % (top - base)) + base, base), top - 1) #further randomize the returned number
-
-#run the getMessage function and ask for the png file
-def select_file():
-    getMessage(filedialog.askopenfilename(initialdir= "/", filetypes=(("png files", "png {*.png}"))))
-
-# don't execute if the file is imported
-if __name__ == "__main__":
-    # create the object to hold widgets
-    root = tk.Tk()
-    # edit geometry of the window
-    root.geometry("500x500")
-    root.resizable(0,0)
-
-    # whole storage area
-    main_frame = tk.Frame(root)
-
-    # find the image
-    file_label = tk.Label(main_frame, text = "select your file", font = "Verdana 15").pack()
-    file_select = tk.Button(main_frame, command = select_file, text = "file").pack(pady = 10)
-
-    # take text details
-    TextLabel = tk.Label(main_frame, text="Encoded text", font = "Verdana 15").pack(pady = 20)
-    TextOutput = tk.Label(main_frame, text = "no file selected").pack()
-
-    # show widgets (using pack)
-    main_frame.pack(expand=1,fill=tk.BOTH, padx = 10, pady = 10)
-
-    # show the window and widgets
-    root.mainloop()
