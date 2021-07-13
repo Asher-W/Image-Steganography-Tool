@@ -35,12 +35,12 @@ def encode_message(file_name, text, URL):
     base_green = 0
     base_blue = 0
 
-    # loop through the URL and find where to puth the encoded pixels
+    # loop through the URL and find where to path the encoded pixels
     for index in range(len(URL)):
         if not index: seed = sf.string_to_num(file_name.split('/')[-1]) + 1 # get a seed based on the file name
         else: seed = ord(URL[index - 1]) + index * 2 # get a seed based on the previous character's ascii value and index
 
-        pos_change = 1 # use a incrementing value, so seed canges can't get stuck in a loop
+        pos_change = 1 # use a incrementing value, so seed changes can't get stuck in a loop
         # get the new pixel to read from and verify that it isn't already in use
         while 1:
             new_pix = [sf.get_pseudorandom(seed * width, 0, width), sf.get_pseudorandom((seed + height/2) * height, 0, height)]
@@ -103,7 +103,7 @@ def encode_message(file_name, text, URL):
         if not index: seed = ord(URL[-1]) + 1 # get a seed based on the last char of the URL
         else: seed = ord(text[index - 1]) + index * 2 # get a seed based on the previous character in the text and the index
         
-        pos_change = 1 # use a incrementing value, so seed canges can't get stuck in a loop
+        pos_change = 1 # use a incrementing value, so seed changes can't get stuck in a loop
         # get the new pixel to write to and verify that it isn't already in use
         while 1:
             new_pix = [sf.get_pseudorandom(seed * width, 0, width), sf.get_pseudorandom((seed + height/2) * height, 0, height)]
