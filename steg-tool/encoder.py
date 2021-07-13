@@ -5,7 +5,13 @@ from io import BytesIO
 
 # get the input values and pass it onto the encode function
 def process(URL, text, name, folder):
-    if ":" not in folder: return
+    # verify a valid file name
+    name = "".join(char for char in name if char in "()_-,. " or char.isalpha() or char.isnumeric())
+    if len(name) > 100: name = name[:100]
+
+    # make sure the folder var is a valid path and that the file is named
+    if ":" not in folder or not len(name): return
+
     name = folder + "/" + name + ".png" # make a path variable to the file
     
     encode_message(name, text, URL)
@@ -131,6 +137,6 @@ def encode_message(file_name, text, URL):
 
         # apply the adjusted RGB values relative to the unedited pixel
         pixels[new_pix[0], new_pix[1]] = (colors[0] + red, colors[1] + green, colors[2] + blue)
-
+        
     im.save(file_name) # save the image code to the png file
     im.close() # close the file reference

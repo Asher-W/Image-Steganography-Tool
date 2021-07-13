@@ -17,11 +17,11 @@ def open_encoder():
     main_frame = tk.Frame(root)
 
     # take image details
-    URL_label = tk.Label(main_frame, text="Image URL")
-    URL_input = tk.Text(main_frame, width = 50, height = 2)
+    URL_label = tk.Label(main_frame, text="Image URL", font = "Verdana 13")
+    URL_input = tk.Text(main_frame, width = 50, height = 4)
 
     # take image details
-    name_label = tk.Label(main_frame, text="Image file Name (always a png)")
+    name_label = tk.Label(main_frame, text="Image file Name (always a png)", font = "Verdana 13")
     name_input = tk.Text(main_frame, width = 50, height = 1)
 
     # find where to store the image
@@ -30,8 +30,8 @@ def open_encoder():
     folder_select = tk.Button(main_frame, command = select_folder, text = "select folder")
 
     # take text details
-    text_label = tk.Label(main_frame, text="Encoded")
-    text_input = tk.Text(main_frame, width = 75, height = 10)
+    text_label = tk.Label(main_frame, text="Encoded", font = "Verdana 13")
+    text_input = tk.Text(main_frame, width = 75, height = 12)
 
     # show widgets (using pack)
     main_frame.pack(expand=1,fill=tk.BOTH, padx = 10, pady = 10)
@@ -47,8 +47,8 @@ def open_encoder():
     text_input.pack()
 
     # submit button
-    submit = tk.Button(main_frame, command = lambda: encoder.process(URL_input.get("1.0","end"), 
-      text_input.get("1.0","end"), name_input.get("1.0", "end"), folder), text = "process").pack()
+    tk.Button(main_frame, command = lambda: encoder.process(URL_input.get("1.0","end"), 
+      text_input.get("1.0","end"), name_input.get("1.0", "end"), folder), text = "process").pack(pady=5)
 
 # ask for a folder to write to
 def select_folder():
@@ -75,7 +75,7 @@ def open_decoder():
     # take text details
     tk.Label(main_frame, text="Encoded text", font = "Verdana 15").pack(pady = 20)
     global text_output
-    text_output = tk.Label(main_frame, text = "no file selected")
+    text_output = tk.Label(main_frame, text = "no file selected", wraplength=475)
     text_output.pack()
 
     # show widgets (using pack)
