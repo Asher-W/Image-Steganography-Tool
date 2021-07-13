@@ -9,6 +9,9 @@ def open_encoder():
     # edit geometry of the window
     root.geometry("500x500")
     root.resizable(0,0)
+    
+    # name the window
+    root.title("Encoder")
 
     # whole storage area
     main_frame = tk.Frame(root)
@@ -19,15 +22,15 @@ def open_encoder():
 
     # take image details
     name_label = tk.Label(main_frame, text="Image file Name (always a png)")
-    name_input = tk.Entry(main_frame)
+    name_input = tk.Text(main_frame, width = 50, height = 1)
 
     # find where to store the image
     global folder 
     folder = "/"
-    folder_select = tk.Button(main_frame, command = select_folder, text = "folder")
+    folder_select = tk.Button(main_frame, command = select_folder, text = "select folder")
 
     # take text details
-    text_label = tk.Label(main_frame, text="Encoded text")
+    text_label = tk.Label(main_frame, text="Encoded")
     text_input = tk.Text(main_frame, width = 75, height = 10)
 
     # show widgets (using pack)
@@ -37,14 +40,15 @@ def open_encoder():
     URL_input.pack()
     name_label.pack()
     name_input.pack()
-    folder_select.pack()
+
+    folder_select.pack(pady = 10)
 
     text_label.pack()
     text_input.pack()
 
     # submit button
     submit = tk.Button(main_frame, command = lambda: encoder.process(URL_input.get("1.0","end"), 
-      text_input.get("1.0","end"), name_input.get(), folder), text = "process").pack()
+      text_input.get("1.0","end"), name_input.get("1.0", "end"), folder), text = "process").pack()
 
 # ask for a folder to write to
 def select_folder():
@@ -57,6 +61,9 @@ def open_decoder():
     # edit geometry of the window
     root.geometry("500x500")
     root.resizable(0,0)
+    
+    # name the window
+    root.title("Decoder")
 
     # whole storage area
     main_frame = tk.Frame(root)
@@ -86,17 +93,27 @@ if __name__ == "__main__":
     # create the parent window to open the encoder/decoder
     root = tk.Tk()
     # edit the size of root
-    root.geometry("300x75")
+    root.geometry("400x150")
     root.resizable(0,0)
+    
+    # name the window
+    root.title("Image Steganography")
 
-    # make a container to hold the buttons
+    # make xontainers
+    title_frame = tk.Frame(root)
     main_frame = tk.Frame(root)
 
+    #write the title
+    tk.Label(root, text = "Image Steganography", font = "Veranda 15").pack()
+    tk.Label(root, text = "By Asher-W", font = "Veranda 12").pack()
+    tk.Label(root, text = "Asisted by J-nac", font = "Veranda 12").pack()
+
     # create the buttons to open the encoder and decoder
-    encode = tk.Button(main_frame, command = open_encoder, width = 9, text = "encoder", font = "Verdana 15")
-    decode = tk.Button(main_frame, command = open_decoder, width = 9, text = "decoder", font = "Verdana 15")
+    encode = tk.Button(main_frame, command = open_encoder, width = 15, text = "Open Encoder", font = "Verdana 15")
+    decode = tk.Button(main_frame, command = open_decoder, width = 15, text = "Open Decoder", font = "Verdana 15")
 
     # display the container and widgets
+    title_frame.pack(expand = 1, fill = tk.BOTH)
     main_frame.pack(padx = 5, pady = 3, fill = tk.BOTH, expand = 1)
     encode.pack(side = tk.LEFT)
     decode.pack(side = tk.RIGHT)
