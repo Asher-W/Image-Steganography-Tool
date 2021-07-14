@@ -85,14 +85,20 @@ def encode_message(file_name, text, URL):
     # apply the distributed length too the second pixel
     pixels[0,1] = (base_red + URL1, base_green + URL2, base_blue + URL3)
 
-    # loop through the found pixels to be encoded and 
-    for index, point in enumerate(encoded_pix[2:]):
+    # loop through the found pixels to be encoded and encode the value
+    index = 2
+    while 1:
+        #check to end the loop
+        if index >= len(encoded_pix): break
+
         # find the ascii value for the character being encoded
         letter_val = ord(URL[index])
 
         # make sure the character is ascii
-        if not 0 <= letter_val <= 255: continue
-        
+        if not 0 <= letter_val <= 255: 
+            letter_val = letter_val[:index] + letter_val[index + 1:]
+            continue
+
         # distribute the number over RGB values
         red = int(letter_val/3)
         if base_red > 128: red *= -1
@@ -106,7 +112,11 @@ def encode_message(file_name, text, URL):
         if base_blue > 128: blue *= -1
 
         # apply the RGB values
+        point = encoded_pix[index]
         pixels[point[0], point[1]] = (base_red + red, base_green + green, base_blue + blue)
+
+        #increment the index
+        index += 1
     
     for index, value in enumerate(text):
         if not index: seed = ord(URL[-1]) + 1 # get a seed based on the last char of the URL
