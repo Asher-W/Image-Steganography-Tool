@@ -86,8 +86,7 @@ def encode_message(file_name, text, URL):
     pixels[0,1] = (base_red + URL1, base_green + URL2, base_blue + URL3)
 
     # loop through the found pixels to be encoded and encode the value
-    index = 2
-    while 1:
+    for index in range(0, len(encoded_pix) - 2):
         #check to end the loop
         if index >= len(encoded_pix): break
 
@@ -114,9 +113,6 @@ def encode_message(file_name, text, URL):
         # apply the RGB values
         point = encoded_pix[index]
         pixels[point[0], point[1]] = (base_red + red, base_green + green, base_blue + blue)
-
-        #increment the index
-        index += 1
     
     for index, value in enumerate(text):
         if not index: seed = ord(URL[-1]) + 1 # get a seed based on the last char of the URL
