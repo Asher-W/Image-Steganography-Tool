@@ -3,6 +3,8 @@ import shared_functions as sf
 from requests import get
 from io import BytesIO
 
+from math import sqrt
+
 def getMessage(file_name):
     # make sure the file is selected
     if ".png" not in file_name: return
@@ -14,10 +16,10 @@ def getMessage(file_name):
     base_color = pixels[0,0] # get the reference color for decoding the URL
 
     encoded_len = pixels[0,1] # get the pixel values storing the stored URL's length
-    URL_length = (abs(base_color[0] - encoded_len[0]) + abs(base_color[1] - encoded_len[1]) + 
-      abs(base_color[2] - encoded_len[2]))  # decode the encoded URL pixel
+    
+    URL_length = ((abs(base_color[0] - encoded_len[0]) ** 2) + abs(base_color[1] - encoded_len[1]) + abs(base_color[2] - encoded_len[2]))  # decode the encoded URL pixel
 
-    encoded_pix = [[0,0],[0,1]] # list to store in-use pixels
+    encoded_pix = [(0,0),(0,1)] # list to store in-use pixels
 
     saved_URL = ""
     for index in range(URL_length):
@@ -27,9 +29,10 @@ def getMessage(file_name):
         pos_change = 1 # use a incrementing value, so seed canges can't get stuck in a loop
         # get the new pixel to read from and verify that it isn't already in use
         while 1:
-            new_pix = [sf.get_sudo_random(seed * width, 0, width), sf.get_sudo_random((seed + height/2) * height, 0, height)]
+            new_pix = (sf.get_sudo_random(seed * width, 0, width), 
+              sf.get_sudo_random((seed ** 2) * height, 0, height))
             if new_pix not in encoded_pix: break
-            seed = sf.get_sudo_random(seed, 0, width) + pos_change
+            seed = sf.get_sudo_random(seed + pos_change, 0, width)
             pos_change += 1
 
         encoded_pix.append(new_pix)
@@ -38,10 +41,9 @@ def getMessage(file_name):
         pixel_color = pixels[new_pix[0],new_pix[1]]
         # check or impropper inputs
         try:
-          saved_URL = saved_URL + chr(abs(base_color[0] - pixel_color[0]) + abs(base_color[1] - pixel_color[1]) + 
-            abs(base_color[2] - pixel_color[2]))
+            saved_URL = saved_URL + chr((abs(base_color[0] - pixel_color[0]) ** 2) + abs(base_color[2] - pixel_color[2]) + abs(base_color[1] - pixel_color[1]))
         except ValueError: 
-          return "Improper file"
+            return "Improper file"
 
     # get the unedited image from the url, and check for a proper connection
     request = get(saved_URL)
@@ -61,9 +63,10 @@ def getMessage(file_name):
 
         # find the next pixel and verify that they aren't already in use
         while 1:
-            new_pix = [sf.get_sudo_random(seed * width, 0, width), sf.get_sudo_random((seed + height/2) * height, 0, height)]
+            new_pix = (sf.get_sudo_random(seed * width, 0, width), 
+              sf.get_sudo_random((seed + height/2) * height, 0, height))
             if new_pix not in encoded_pix: break 
-            seed = sf.get_sudo_random(seed, 0, width) + pos_change
+            seed = sf.get_sudo_random(seed + pos_change, 0, width)
             pos_change += 1
         
         encoded_pix.append(new_pix)
@@ -72,10 +75,9 @@ def getMessage(file_name):
         unedited_color = unedited_pix[new_pix[0], new_pix[1]]
         color = pixels[new_pix[0], new_pix[1]]
         if unedited_color == color: break # check if the pixels are the same
-        saved_text = saved_text + chr(abs(color[0] - unedited_color[0]) + abs(color[1] - unedited_color[1]) + 
-          abs(color[2] - unedited_color[2]))
+        saved_text = saved_text + chr((abs(color[0] - unedited_color[0]) ** 2) + abs(color[1] - unedited_color[1]) + abs(color[2] - unedited_color[2]))
 
         index += 1 #increment the index value for the next loop
-
-    if saved_text: return saved_text # update the tkinter window to display found text
+    if saved_text:    
+        return saved_text # update the tkinter window to display found text
     else: return "Improper file"
